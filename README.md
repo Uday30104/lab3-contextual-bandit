@@ -1,74 +1,56 @@
-# Student Submission Checklist (Lab 3)
+# User Classification for Contextual Bandits
 
-Before submitting your Lab 3 assignment, ensure that **all items below are completed**. Submissions that do not follow this checklist may receive partial or no credit.
-
----
-
-## 🔹 Repository and Branching
-
-* [ ] The repository is correctly created on GitHub.
-* [ ] All work is committed to **exactly one branch** named
-  `firstname_U20230xxx`.
-* [ ] **No work is pushed to `master`**.
-* [ ] The correct branch is pushed to GitHub.
+This project implements a user classification pipeline that acts as a **context detector** for a contextual bandit system.  
+Users are classified into three categories (`user_1`, `user_2`, `user_3`) based on behavioral, transactional, and device-level features.
 
 ---
 
-## 🔹 Notebook Submission
-
-* [ ] Exactly **one** Jupyter Notebook (`.ipynb`) is submitted.
-* [ ] The notebook is placed at the **root of the repository**.
-* [ ] The notebook is named **exactly**:
-  `lab3_results_<roll_number>.ipynb`.
-* [ ] The notebook runs **top to bottom without errors**.
-* [ ] All outputs (plots, tables, metrics) are visible in the notebook.
+## Problem Overview
+Given historical user interaction data, the goal is to:
+- Preprocess and clean the dataset
+- Train a classifier to predict user categories
+- Evaluate model performance on a validation set
+- Predict user context for unseen test users
 
 ---
 
-## 🔹 Sampler Usage
+## Dataset
+Each user record contains:
+- Behavioral features (clicks, session duration, engagement)
+- Transactional features (purchase amount, cart value)
+- Device/system features (battery, browser version, network jitter)
 
-* [ ] The provided `sampler` package is used **without modification**.
-* [ ] The sampler is initialized using your correct roll number `i`.
-* [ ] Rewards are obtained **only** via `sampler.sample(j)`.
-* [ ] No hard-coded or synthetic rewards are used.
-
----
-
-## 🔹 Contextual Bandit Implementation
-
-* [ ] User category is treated as the **context**.
-* [ ] News category is treated as the **bandit arm**.
-* [ ] The arm index mapping follows the specification in the lab handout.
-* [ ] All three algorithms are implemented:
-
-  * Epsilon-Greedy
-  * Upper Confidence Bound (UCB)
-  * SoftMax
+Target variable:
+- `label` ∈ {`user_1`, `user_2`, `user_3`}
 
 ---
 
-## 🔹 Evaluation and Plots
-
-* [ ] Classification accuracy is reported on `test_users.csv`.
-* [ ] Reinforcement learning simulation is run for **T = 10,000 steps**.
-* [ ] Plots include:
-
-  * Average Reward vs. Time (per context)
-  * Hyperparameter comparison plots
-* [ ] All plots have labeled axes, legends, and titles.
+## Methodology
+- Dropped identifier columns (`user_id`)
+- Handled missing values using median (numerical) and mode (categorical)
+- Encoded categorical features with `OrdinalEncoder`
+- Used an 80/20 train–validation split
 
 ---
 
-## 🔹 README.md Requirements
+## Models
+- **Logistic Regression** (baseline, with feature scaling)  
+  - Validation accuracy: ~82%
+- **Decision Tree Classifier** (final model)  
+  - Captures non-linear user behavior  
+  - Validation accuracy: **~86%**
 
-* [ ] README.md is present at the repository root.
-* [ ] It explains the overall approach and design decisions.
-* [ ] It summarizes key results and observations.
-* [ ] It includes clear instructions to reproduce the experiments.
-* [ ] All external references (if any) are properly cited.
+The Decision Tree was selected as the final context detector due to better overall performance.
 
 ---
 
-## Important Note
+## Evaluation
+Models were evaluated using `classification_report` (precision, recall, F1-score).  
+The Decision Tree showed improved recall across all user categories.
 
-> Submissions that do not follow the specified branch name, notebook naming convention, or sampler usage rules may not be evaluated.
+---
+
+## Context Detection
+The trained classifier is applied to unseen test users to infer user categories, which serve as context inputs for downstream bandit algorithms.
+
+---
